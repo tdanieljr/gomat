@@ -1,4 +1,4 @@
-package mat
+package gomat
 
 import (
 	"reflect"
