@@ -181,9 +181,9 @@ func (m *Matrix[T]) Apply(f func(T) T) {
 
 func (m Matrix[T]) Transpose() Matrix[T] {
 	out := Init[T](m.Cols, m.Rows)
-	for i := range m.Rows {
-		for j := range m.Cols {
-			out.Data[j*out.Stride+i] = m.Get(i, j)
+	for i := range out.Rows {
+		for j := range out.Cols {
+			out.Data[i*out.Stride+j] = m.Get(j, i)
 		}
 	}
 	return out
