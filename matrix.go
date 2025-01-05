@@ -28,6 +28,14 @@ func FromValues[T Number](rows, cols int, data []T) Matrix[T] {
 	return Matrix[T]{Data: data, Rows: rows, Cols: cols, Stride: cols}
 }
 
+func Ones[T Number](rows, cols int) Matrix[T] {
+	m := Init[T](rows, cols)
+	for i := range m.Data {
+		m.Data[i] = 1
+	}
+	return m
+}
+
 func (m Matrix[T]) Get(i, j int) T {
 	m.indexCheck(i, j)
 	return m.Data[i*m.Stride+j]
@@ -98,7 +106,13 @@ func (m Matrix[T]) GetRow(i int) Vec[T] {
 	return m.Data[i*m.Stride : i*m.Stride+m.Cols]
 }
 
-func (m *Matrix[T]) Mul(other Matrix[T]) Matrix[T] {
+func (m *Matrix[T]) ScaleBy(x T) {
+	for i := range m.Data {
+		m.Data[i] *= x
+	}
+}
+
+func (m Matrix[T]) Mul(other Matrix[T]) Matrix[T] {
 	// TODO: what happens if strides are different? I think this is wrong.
 	// since the backing data is flat
 	if m.Rows != other.Rows || m.Cols != other.Cols {
@@ -114,7 +128,7 @@ func (m *Matrix[T]) Mul(other Matrix[T]) Matrix[T] {
 	return FromValues(m.Rows, m.Cols, data)
 }
 
-func (m *Matrix[T]) Div(other Matrix[T]) Matrix[T] {
+func (m Matrix[T]) Div(other Matrix[T]) Matrix[T] {
 	// TODO: what if strides are different?
 	if m.Rows != other.Rows || m.Cols != other.Cols {
 		panic("mismatched dims")
@@ -129,7 +143,7 @@ func (m *Matrix[T]) Div(other Matrix[T]) Matrix[T] {
 	return FromValues(m.Rows, m.Cols, data)
 }
 
-func (m *Matrix[T]) Add(other Matrix[T]) Matrix[T] {
+func (m Matrix[T]) Add(other Matrix[T]) Matrix[T] {
 	// TODO: what if strides are different?
 	if m.Rows != other.Rows || m.Cols != other.Cols {
 		panic("mismatched dims")
@@ -144,7 +158,7 @@ func (m *Matrix[T]) Add(other Matrix[T]) Matrix[T] {
 	return FromValues(m.Rows, m.Cols, data)
 }
 
-func (m *Matrix[T]) Sub(other Matrix[T]) Matrix[T] {
+func (m Matrix[T]) Sub(other Matrix[T]) Matrix[T] {
 	// TODO: what if strides are different?
 	if m.Rows != other.Rows || m.Cols != other.Cols {
 		panic("mismatched dims")
