@@ -179,6 +179,16 @@ func (m *Matrix[T]) Apply(f func(T) T) {
 	}
 }
 
+func (m Matrix[T]) Transpose() Matrix[T] {
+	out := Init[T](m.Cols, m.Rows)
+	for i := range m.Rows {
+		for j := range m.Cols {
+			out.Data[j*out.Stride+i] = m.Get(i, j)
+		}
+	}
+	return out
+}
+
 func Linspace(start, stop, dx float64) Vec[float64] {
 	n := int64((stop-start)/dx) + 1
 	x := make([]float64, n)
