@@ -1,5 +1,7 @@
 package gomat
 
+import "iter"
+
 type Number interface {
 	float64 | complex128
 }
@@ -74,7 +76,7 @@ func _slice[T Number](m Matrix[T], i, k, j, l int, clone bool) Matrix[T] {
 	return Matrix[T]{m.Data[start : start+n], k, l, m.Stride}
 }
 
-func (m Matrix[T]) IterRows() func(yield func(int, Vec[T]) bool) {
+func (m Matrix[T]) IterRows() iter.Seq2[int, Vec[T]] {
 	return func(yield func(int, Vec[T]) bool) {
 		for i := range m.Rows {
 			if !yield(i, m.Data[i*m.Stride:i*m.Stride+m.Cols]) {
@@ -114,7 +116,7 @@ func (m *Matrix[T]) ScaleBy(x T) {
 
 func (m Matrix[T]) Mul(other Matrix[T]) Matrix[T] {
 	// TODO: what happens if strides are different? I think this is wrong.
-	// since the backing data is flat
+	// since the backing data is flat, fixed by iterRows?
 	if m.Rows != other.Rows || m.Cols != other.Cols {
 		panic("mismatched dims")
 	}
@@ -196,6 +198,12 @@ func Linspace(start, stop, dx float64) Vec[float64] {
 		x[i] = start + float64(i)*dx
 	}
 	return x
+}
+
+func (v Vec[T]) Apply(f func(T) T) {
+	for i, val := range v {
+		v[i] = f(val)
+	}
 }
 
 func RealToComplex(x []float64) []complex128 {
